@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Sovereign Guard — Secure Encrypted Platform{% endblock %}
+{% block content %}
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge">CSE447 · Cryptography Lab Project</div>
+    <h1 class="hero-title">
+      <span class="gradient-text">Sovereign Guard</span>
+    </h1>
+    <p class="hero-subtitle">
+      A secure social platform where every byte is protected.<br/>
+      RSA-2048 · ECC P-256 · HMAC-SHA256 · TOTP 2FA — all from scratch.
+    </p>
+    <div class="hero-actions">
+      {% if user %}
+        <a href="{{ url_for('feed') }}" class="btn btn-primary btn-lg">Open Feed →</a>
+      {% else %}
+        <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">Get Started →</a>
+        <a href="{{ url_for('login') }}" class="btn btn-outline btn-lg">Sign In</a>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Feature Cards -->
+<section class="features">
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🔐</div>
+      <h3>RSA-2048 Profile Encryption</h3>
+      <p>User profiles (username, email, phone) encrypted with hand-coded RSA using OAEP padding and Miller-Rabin primality.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🌐</div>
+      <h3>ECC P-256 Post Encryption</h3>
+      <p>Posts encrypted via ECIES over NIST P-256. Point arithmetic, scalar multiplication, and XOR stream cipher — all from scratch.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔑</div>
+      <h3>Key Management</h3>
+      <p>Per-user RSA and ECC key pairs, securely wrapped at rest. Admins can trigger key rotation with seamless re-encryption.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🛡</div>
+      <h3>HMAC-SHA256 Integrity</h3>
+      <p>Every user record and post is tagged with an HMAC-SHA256 computed from scratch to detect unauthorized modification.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>TOTP Two-Factor Auth</h3>
+      <p>RFC 6238 TOTP with HMAC-SHA1 implemented from scratch. Compatible with Google Authenticator and Authy.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">👥</div>
+      <h3>Role-Based Access Control</h3>
+      <p>Admin and User roles with distinct privileges. Signed session tokens prevent session hijacking and replay attacks.</p>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

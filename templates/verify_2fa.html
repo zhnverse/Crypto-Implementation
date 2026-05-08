@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Two-Factor Authentication — Sovereign Guard{% endblock %}
+{% block content %}
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-icon">📱</div>
+      <h1>Two-Factor Verification</h1>
+      <p>Enter the 6-digit code from your authenticator app to complete login.</p>
+    </div>
+
+    <!-- Demo live code -->
+    <div class="live-code-box" style="margin-bottom:1.5rem;">
+      <div class="live-code-label">Current TOTP Code (demo display):</div>
+      <div class="live-code">{{ current_code }}</div>
+      <div class="code-timer">
+        <div class="timer-bar" id="timerBar"></div>
+      </div>
+    </div>
+
+    <form method="POST" class="auth-form">
+      <div class="form-group">
+        <label for="code">TOTP Code</label>
+        <input type="text" id="code" name="code" required
+               maxlength="6" pattern="\d{6}" placeholder="000000"
+               class="otp-input" autocomplete="one-time-code" autofocus/>
+      </div>
+
+      <div class="crypto-info-box">
+        <div class="crypto-info-icon">🔒</div>
+        <div>TOTP verified using <strong>HMAC-SHA1</strong> implemented from scratch (RFC&nbsp;6238). Time window: ±30 seconds.</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full">Verify Identity →</button>
+    </form>
+
+    <p class="auth-footer"><a href="{{ url_for('login') }}">← Back to Login</a></p>
+  </div>
+</div>
+
+<script>
+  function updateTimer() {
+    const now = Math.floor(Date.now() / 1000);
+    const pct = ((now % 30) / 30) * 100;
+    document.getElementById('timerBar').style.width = pct + '%';
+  }
+  setInterval(updateTimer, 500);
+  updateTimer();
+</script>
+{% endblock %}

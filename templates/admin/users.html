@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Admin — Users — Sovereign Guard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">👥 User Management</h1>
+    <p class="page-subtitle">All profile fields decrypted with RSA-2048. Integrity verified via HMAC-SHA256.</p>
+  </div>
+  <span class="admin-badge">Admin Panel</span>
+</div>
+
+<div class="admin-table-wrap glass-card">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Username</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Role</th>
+        <th>Joined</th>
+        <th>Integrity</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr class="{% if not u.integrity_ok %}row-tampered{% endif %}">
+        <td class="mono">#{{ u.id }}</td>
+        <td><strong>{{ u.username }}</strong></td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.phone }}</td>
+        <td>
+          <span class="role-badge role-{{ u.role }}">{{ u.role }}</span>
+        </td>
+        <td class="mono">{{ u.joined }}</td>
+        <td>
+          {% if u.integrity_ok %}
+            <span class="integrity-badge ok">✓ OK</span>
+          {% else %}
+            <span class="integrity-badge bad">⚠ FAIL</span>
+          {% endif %}
+        </td>
+        <td>
+          {% if u.id != user.id %}
+          <form method="POST"
+                action="{{ url_for('admin_set_role', target_id=u.id) }}"
+                class="inline-form">
+            <select name="role" class="role-select">
+              <option value="user" {% if u.role == 'user' %}selected{% endif %}>User</option>
+              <option value="admin" {% if u.role == 'admin' %}selected{% endif %}>Admin</option>
+            </select>
+            <button type="submit" class="btn btn-sm btn-outline">Set</button>
+          </form>
+          {% else %}
+            <span class="self-label">(you)</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="db-note glass-card">
+  <h3>🗄 Raw Database Evidence</h3>
+  <p>Fields stored in the database appear as RSA-2048 ciphertext (hex). Below is a sample of the first user's encrypted email (first 80 chars):</p>
+  {% if users %}
+  <code class="db-sample">{{ users[0].email_enc[:80] }}…</code>
+  {% endif %}
+  <p style="margin-top:0.5rem; color:var(--text-muted); font-size:0.82rem;">
+    Even with direct DB access, profile data remains unreadable without the user's private key.
+  </p>
+</div>
+
+{% endblock %}

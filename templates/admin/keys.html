@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Admin — Key Management — Sovereign Guard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">🔑 Key Management</h1>
+    <p class="page-subtitle">Per-user RSA-2048 and ECC P-256 key pairs. Rotate to re-encrypt all data.</p>
+  </div>
+  <span class="admin-badge">Admin Panel</span>
+</div>
+
+{% for entry in key_data %}
+<div class="key-mgmt-card glass-card">
+  <div class="km-header">
+    <div>
+      <strong>{{ entry.username }}</strong>
+      <span class="mono" style="color:var(--text-muted);">#{{ entry.user.id }}</span>
+      <span class="role-badge role-{{ entry.user.role }}">{{ entry.user.role }}</span>
+    </div>
+    <form method="POST"
+          action="{{ url_for('admin_rotate_keys', target_id=entry.user.id) }}"
+          onsubmit="return confirm('Rotate ALL keys for {{ entry.username }}? This re-encrypts all their data.')">
+      <button type="submit" class="btn btn-sm btn-warning">🔄 Rotate Keys</button>
+    </form>
+  </div>
+
+  <!-- Current keys -->
+  <div class="km-keys-row">
+    <div class="km-key-block">
+      <div class="km-key-type">RSA-2048 Public Key</div>
+      <div class="km-key-field"><span class="kf-label">e:</span>
+        <code>{{ entry.user.rsa_pub_e[:30] }}…</code></div>
+      <div class="km-key-field"><span class="kf-label">n:</span>
+        <code>{{ entry.user.rsa_pub_n[:40] }}…</code></div>
+      <div class="km-key-storage">
+        🔒 Private key: XOR-masked at rest
+      </div>
+    </div>
+    <div class="km-key-block">
+      <div class="km-key-type">ECC P-256 Public Key</div>
+      <div class="km-key-field"><span class="kf-label">X:</span>
+        <code>{{ entry.user.ecc_pub_x[:40] }}…</code></div>
+      <div class="km-key-field"><span class="kf-label">Y:</span>
+        <code>{{ entry.user.ecc_pub_y[:40] }}…</code></div>
+      <div class="km-key-storage">
+        🔒 Private scalar: XOR-masked at rest
+      </div>
+    </div>
+  </div>
+
+  <!-- Archived key versions -->
+  {% if entry.keys %}
+  <div class="km-history">
+    <div class="km-history-title">Key Version History</div>
+    <table class="km-hist-table">
+      <thead>
+        <tr><th>Type</th><th>Version</th><th>Status</th><th>Created</th></tr>
+      </thead>
+      <tbody>
+        {% for k in entry.keys %}
+        <tr>
+          <td>{{ k.key_type | upper }}</td>
+          <td>v{{ k.key_version }}</td>
+          <td>
+            {% if k.active %}
+              <span class="integrity-badge ok">Active</span>
+            {% else %}
+              <span class="integrity-badge bad">Rotated</span>
+            {% endif %}
+          </td>
+          <td class="mono">{{ k.created_at | int }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+
+{% endblock %}

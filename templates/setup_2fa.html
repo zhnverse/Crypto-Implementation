@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}2FA Setup — Sovereign Guard{% endblock %}
+{% block content %}
+
+<div class="auth-page">
+  <div class="auth-card auth-card-wide">
+    <div class="auth-header">
+      <div class="auth-icon">📱</div>
+      <h1>Set Up Two-Factor Auth</h1>
+      <p>Scan the QR code with your authenticator app, then enter the 6-digit code below.</p>
+    </div>
+
+    <!-- QR Code (rendered via JS from URI) -->
+    <div class="qr-section">
+      <div class="qr-container">
+        <canvas id="qrCanvas"></canvas>
+      </div>
+      <p class="qr-label">Scan with Google Authenticator, Authy, etc.</p>
+      <div class="secret-box">
+        <span class="secret-label">Manual entry secret:</span>
+        <code class="secret-code" id="totpSecret">{{ secret }}</code>
+        <button class="copy-btn" onclick="copySecret()">Copy</button>
+      </div>
+    </div>
+
+    <!-- Demo: current live code -->
+    <div class="live-code-box">
+      <div class="live-code-label">Current TOTP Code (live demo):</div>
+      <div class="live-code" id="liveCode">{{ current_code }}</div>
+      <div class="code-timer">
+        <div class="timer-bar" id="timerBar"></div>
+      </div>
+    </div>
+
+    <form method="POST" class="auth-form">
+      <div class="form-group">
+        <label for="code">Enter 6-digit TOTP code</label>
+        <input type="text" id="code" name="code" required
+               maxlength="6" pattern="\d{6}" placeholder="000000"
+               class="otp-input" autocomplete="one-time-code"/>
+      </div>
+      <button type="submit" class="btn btn-primary btn-full">Verify & Continue →</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  // Simple QR code generator (text fallback for the URI)
+  const secret = "{{ secret }}";
+  const uri = "{{ totp_uri }}";
+  document.getElementById('liveCode').textContent = "{{ current_code }}";
+
+  // Timer bar
+  function updateTimer() {
+    const now = Math.floor(Date.now() / 1000);
+    const elapsed = now % 30;
+    const pct = (elapsed / 30) * 100;
+    document.getElementById('timerBar').style.width = pct + '%';
+  }
+  setInterval(updateTimer, 500);
+  updateTimer();
+
+  function copySecret() {
+    navigator.clipboard.writeText(secret).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy', 2000);
+    });
+  }
+
+  // Generate QR code using Google Charts API (no JS library needed)
+  const qrImg = document.createElement('img');
+  qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(uri)}`;
+  qrImg.alt = 'TOTP QR Code';
+  qrImg.style.borderRadius = '8px';
+  const canvas = document.getElementById('qrCanvas');
+  canvas.parentNode.replaceChild(qrImg, canvas);
+</script>
+
+{% endblock %}

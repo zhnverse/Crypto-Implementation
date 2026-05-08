@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}My Profile — Sovereign Guard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">👤 My Profile</h1>
+    <p class="page-subtitle">Decrypted with your personal RSA-2048 private key.</p>
+  </div>
+  <a href="{{ url_for('profile_edit') }}" class="btn btn-primary">Edit Profile</a>
+</div>
+
+<div class="profile-grid">
+  <!-- Profile card -->
+  <div class="profile-card glass-card">
+    <div class="profile-avatar">{{ profile.username[0].upper() }}</div>
+    <h2 class="profile-name">{{ profile.username }}</h2>
+    <span class="role-badge role-{{ role }}">{{ role | capitalize }}</span>
+
+    <div class="profile-fields">
+      <div class="profile-field">
+        <span class="field-label">📧 Email</span>
+        <span class="field-value">{{ profile.email }}</span>
+      </div>
+      <div class="profile-field">
+        <span class="field-label">📞 Phone</span>
+        <span class="field-value">{{ profile.phone }}</span>
+      </div>
+      <div class="profile-field">
+        <span class="field-label">🗓 Joined</span>
+        <span class="field-value">
+          {{ user.created_at | int | strftime }}
+        </span>
+      </div>
+    </div>
+
+    <div class="integrity-row">
+      {% if integrity_ok %}
+        <span class="integrity-badge ok">✓ Data Integrity Verified (HMAC-SHA256)</span>
+      {% else %}
+        <span class="integrity-badge bad">⚠ Integrity Check Failed!</span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Security info panel -->
+  <div class="security-panel glass-card">
+    <h3>🔐 Security Details</h3>
+
+    <div class="security-item">
+      <div class="si-label">Profile Encryption</div>
+      <div class="si-value"><span class="badge-inline">RSA-2048 OAEP</span> (from scratch)</div>
+    </div>
+    <div class="security-item">
+      <div class="si-label">Post Encryption</div>
+      <div class="si-value"><span class="badge-inline">ECC P-256 ECIES</span> (from scratch)</div>
+    </div>
+    <div class="security-item">
+      <div class="si-label">Password Storage</div>
+      <div class="si-value"><span class="badge-inline">PBKDF2-SHA256</span> with salt</div>
+    </div>
+    <div class="security-item">
+      <div class="si-label">Integrity Check</div>
+      <div class="si-value"><span class="badge-inline">HMAC-SHA256</span> (from scratch)</div>
+    </div>
+    <div class="security-item">
+      <div class="si-label">2FA Method</div>
+      <div class="si-value"><span class="badge-inline">TOTP RFC 6238</span> (from scratch)</div>
+    </div>
+    <div class="security-item">
+      <div class="si-label">Session Token</div>
+      <div class="si-value"><span class="badge-inline">HMAC-SHA256 Signed</span></div>
+    </div>
+
+    <div class="totp-display">
+      <div class="totp-label">Current TOTP Code</div>
+      <div class="totp-code">{{ totp_code }}</div>
+      <div class="code-timer">
+        <div class="timer-bar" id="timerBar"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RSA Key info -->
+  <div class="key-card glass-card">
+    <h3>🔑 RSA Public Key (Profile)</h3>
+    <div class="key-field">
+      <div class="key-label">Exponent (e)</div>
+      <code class="key-val">{{ user.rsa_pub_e[:20] }}…</code>
+    </div>
+    <div class="key-field">
+      <div class="key-label">Modulus (n) — first 40 hex chars</div>
+      <code class="key-val">{{ user.rsa_pub_n[:40] }}…</code>
+    </div>
+    <p class="key-note">Private key stored encrypted (XOR-masked with master-key-derived wrap key)</p>
+  </div>
+
+  <!-- ECC Key info -->
+  <div class="key-card glass-card">
+    <h3>🌐 ECC Public Key (Posts)</h3>
+    <div class="key-field">
+      <div class="key-label">Point X (first 40 hex chars)</div>
+      <code class="key-val">{{ user.ecc_pub_x[:40] }}…</code>
+    </div>
+    <div class="key-field">
+      <div class="key-label">Point Y (first 40 hex chars)</div>
+      <code class="key-val">{{ user.ecc_pub_y[:40] }}…</code>
+    </div>
+    <p class="key-note">NIST P-256 curve. Private scalar stored encrypted.</p>
+  </div>
+</div>
+
+<script>
+  function updateTimer() {
+    const now = Math.floor(Date.now() / 1000);
+    const pct = ((now % 30) / 30) * 100;
+    const bar = document.getElementById('timerBar');
+    if (bar) bar.style.width = pct + '%';
+  }
+  setInterval(updateTimer, 500);
+  updateTimer();
+</script>
+{% endblock %}

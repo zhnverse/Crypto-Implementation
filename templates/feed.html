@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Feed — Sovereign Guard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">📰 Secure Feed</h1>
+    <p class="page-subtitle">All posts are decrypted on-the-fly using ECC P-256 ECIES.</p>
+  </div>
+  <a href="{{ url_for('post_new') }}" class="btn btn-primary">+ New Post</a>
+</div>
+
+{% if posts %}
+  <div class="posts-grid">
+    {% for post in posts %}
+      <article class="post-card {% if not post.integrity_ok %}post-tampered{% endif %}">
+        <div class="post-meta-top">
+          <span class="post-author">👤 {{ post.owner_name }}</span>
+          <span class="post-date">{{ post.created_at_fmt }}</span>
+          {% if not post.integrity_ok %}
+            <span class="integrity-badge bad">⚠ Integrity Fail</span>
+          {% else %}
+            <span class="integrity-badge ok">✓ Verified</span>
+          {% endif %}
+        </div>
+
+        <h2 class="post-title">{{ post.title }}</h2>
+        <p class="post-content">{{ post.content[:300] }}{% if post.content|length > 300 %}…{% endif %}</p>
+
+        <div class="post-actions">
+          {% if post.user_id == user.id or role == 'admin' %}
+            <a href="{{ url_for('post_edit', post_id=post.id) }}" class="btn btn-sm btn-outline">Edit</a>
+            <form method="POST" action="{{ url_for('post_delete', post_id=post.id) }}"
+                  style="display:inline" onsubmit="return confirm('Delete this post?')">
+              <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+            </form>
+          {% endif %}
+          <div class="enc-badge">🔒 ECC P-256 ECIES</div>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty-state">
+    <div class="empty-icon">📭</div>
+    <h2>No posts yet</h2>
+    <p>Be the first to share a securely encrypted post.</p>
+    <a href="{{ url_for('post_new') }}" class="btn btn-primary">Create First Post</a>
+  </div>
+{% endif %}
+
+{% endblock %}

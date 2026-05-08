@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Error {{ code }} — Sovereign Guard{% endblock %}
+{% block content %}
+<div class="error-page">
+  <div class="error-code">{{ code }}</div>
+  <h1 class="error-msg">{{ message }}</h1>
+  <a href="{{ url_for('index') }}" class="btn btn-primary">← Go Home</a>
+</div>
+{% endblock %}

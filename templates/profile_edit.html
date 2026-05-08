@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Edit Profile — Sovereign Guard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">✏️ Edit Profile</h1>
+    <p class="page-subtitle">Changes will be re-encrypted with RSA-2048 OAEP.</p>
+  </div>
+  <a href="{{ url_for('profile') }}" class="btn btn-outline">← Cancel</a>
+</div>
+
+<div class="form-page">
+  <form method="POST" class="content-form">
+    <div class="form-group">
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required
+             value="{{ profile.username }}" autocomplete="username"/>
+    </div>
+    <div class="form-group">
+      <label for="email">Email Address</label>
+      <input type="email" id="email" name="email" required
+             value="{{ profile.email }}" autocomplete="email"/>
+    </div>
+    <div class="form-group">
+      <label for="phone">Phone</label>
+      <input type="tel" id="phone" name="phone"
+             value="{{ profile.phone }}" autocomplete="tel"/>
+    </div>
+
+    <div class="crypto-info-box">
+      <div class="crypto-info-icon">🔐</div>
+      <div>
+        Your updated profile will be re-encrypted with your
+        <span class="badge-inline">RSA-2048 OAEP</span> public key.
+        A new <span class="badge-inline">HMAC-SHA256</span> integrity tag will be computed.
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href="{{ url_for('profile') }}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">🔒 Save Encrypted</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

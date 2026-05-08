@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Register — Sovereign Guard{% endblock %}
+{% block content %}
+
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-icon">🛡</div>
+      <h1>Create Account</h1>
+      <p>Your data will be encrypted with RSA-2048 before storage.</p>
+    </div>
+
+    <form method="POST" class="auth-form" id="registerForm">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" required
+               placeholder="Choose a username" autocomplete="username"/>
+      </div>
+
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" required
+               placeholder="your@email.com" autocomplete="email"/>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone (optional)</label>
+        <input type="tel" id="phone" name="phone"
+               placeholder="+1 234 567 8900" autocomplete="tel"/>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-with-toggle">
+          <input type="password" id="password" name="password" required
+                 placeholder="Min. 8 characters" autocomplete="new-password"/>
+          <button type="button" class="toggle-pw" data-target="password">👁</button>
+        </div>
+        <div class="pw-strength" id="pwStrength"></div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirm_password">Confirm Password</label>
+        <div class="input-with-toggle">
+          <input type="password" id="confirm_password" name="confirm_password" required
+                 placeholder="Repeat your password" autocomplete="new-password"/>
+          <button type="button" class="toggle-pw" data-target="confirm_password">👁</button>
+        </div>
+      </div>
+
+      <div class="crypto-info-box">
+        <div class="crypto-info-icon">ℹ</div>
+        <div>
+          <strong>Encryption Note:</strong> Your profile fields will be encrypted with
+          <span class="badge-inline">RSA-2048 OAEP</span> before being stored.
+          A unique key pair is generated for your account.
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-full" id="registerBtn">
+        <span class="btn-text">Create Secure Account</span>
+        <span class="btn-spinner hidden">⟳</span>
+      </button>
+    </form>
+
+    <p class="auth-footer">Already have an account? <a href="{{ url_for('login') }}">Sign in</a></p>
+  </div>
+</div>
+
+{% endblock %}

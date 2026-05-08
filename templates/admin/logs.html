@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Admin — Audit Logs — Sovereign Guard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">📋 Audit Logs</h1>
+    <p class="page-subtitle">Complete log of all critical security events in the system.</p>
+  </div>
+  <span class="admin-badge">Admin Panel</span>
+</div>
+
+<div class="admin-table-wrap glass-card">
+  <table class="admin-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>User</th>
+        <th>Action</th>
+        <th>Detail</th>
+        <th>IP</th>
+        <th>Timestamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for log in logs %}
+      <tr>
+        <td class="mono">#{{ log.id }}</td>
+        <td class="mono">{{ log.user_id or '—' }}</td>
+        <td>
+          <span class="log-action log-{{ log.action | lower | replace('_','-') }}">
+            {{ log.action }}
+          </span>
+        </td>
+        <td>{{ log.detail or '—' }}</td>
+        <td class="mono">{{ log.ip or '—' }}</td>
+        <td class="mono">{{ log.ts_fmt }}</td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">
+          No audit logs yet.
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}Edit Post — Sovereign Guard{% endblock %}
+{% block content %}
+
+<div class="page-header">
+  <div>
+    <h1 class="page-title">✏️ Edit Post</h1>
+    <p class="page-subtitle">Editing will re-encrypt the post with your ECC P-256 key.</p>
+  </div>
+  <a href="{{ url_for('feed') }}" class="btn btn-outline">← Back</a>
+</div>
+
+<div class="form-page">
+  <form method="POST" class="content-form">
+    <div class="form-group">
+      <label for="title">Post Title</label>
+      <input type="text" id="title" name="title" required
+             value="{{ post.title }}" maxlength="200"/>
+    </div>
+
+    <div class="form-group">
+      <label for="content">Content</label>
+      <textarea id="content" name="content" required rows="8">{{ post.content }}</textarea>
+    </div>
+
+    <div class="crypto-info-box">
+      <div class="crypto-info-icon">🔄</div>
+      <div>
+        Saving will <strong>re-encrypt</strong> with
+        <span class="badge-inline">ECC P-256 ECIES</span> and recompute the
+        <span class="badge-inline">HMAC-SHA256</span> integrity tag.
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <a href="{{ url_for('feed') }}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">🔒 Save Encrypted</button>
+    </div>
+  </form>
+</div>
+
+{% endblock %}
